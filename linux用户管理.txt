@@ -1,0 +1,104 @@
+linux用户管理常用命令 
+
+1）管理用户（user）的工具或命令； 
+useradd 注：添加用户 
+adduser 注：添加用户 
+passwd 注：为用户设置密码 
+usermod 注：修改用户命令，可以通过usermod 来修改登录名、用户的家目录等等； 
+pwcov 注：同步用户从/etc/passwd 到/etc/shadow 
+pwck 注：pwck是校验用户配置文件/etc/passwd 和/etc/shadow 文件内容是否合法或完整； 
+pwunconv 注：是pwcov 的立逆向操作，是从/etc/shadow和 /etc/passwd 创建/etc/passwd ，然后会删除 /etc/shadow 文件； 
+finger 注：查看用户信息工具 
+id 注：查看用户的UID、GID及所归属的用户组 
+chfn 注：更改用户信息工具 
+su 注：用户切换工具 
+sudo 注：sudo 是通过另一个用户来执行命令（execute a command as another user），su 是用来切换用户，然后通过切换到的用户来完成相应的任务，但sudo 能后面直接执行命令，比如sudo 不需要root 密码就可以执行root 赋与的执行只有root才能执行相应的命令；但得通过visudo 来编辑/etc/sudoers来实现； 
+visudo 注：visodo 是编辑 /etc/sudoers 的命令；也可以不用这个命令，直接用vi 来编辑 /etc/sudoers 的效果是一样的； 
+sudoedit 注：和sudo 功能差不多； 
+
+2）管理用户组（group）的工具或命令； 
+groupadd 注：添加用户组； 
+groupdel 注：删除用户组； 
+groupmod 注：修改用户组信息 
+groups 注：显示用户所属的用户组 
+grpck 
+grpconv 注：通过/etc/group和/etc/gshadow 的文件内容来同步或创建/etc/gshadow ，如果/etc/gshadow 不存在则创建； 
+grpunconv 注：通过/etc/group 和/etc/gshadow 文件内容来同步或创建/etc/group ，然后删除gshadow文件； 
+/////////// 
+建立一个新用户 
+
+建立一个新的用户包括两个步骤，第一步是使用useradd命令完成一个新用户的初始化设置工作；第二步是用passwd为这个新用户设置密码。例如，我们要给系统添加一个用户叫floatboat，密码为fan2001z，那相关的操作是： 
+useradd floatboat <回车> 
+这时候系统没有任何显示。接着： 
+passwd floatboat <回车> 
+系统显示： 
+Changing password for user floatboat 
+New UNIX password: 
+你输入： 
+fan2001z<回车> 
+注意，由于linux并不采用类似windows的密码回显（显示为*号）——为避免你输入密码时被人注意到有多少位——所以，输入的这些字符你是看不见的。 
+系统显示： 
+Retype new UNIX password: 
+你再重新输入一次密码，然后回车确认，这时系统会显示： 
+passwd:all authentication tokens updated successfully 
+表示你修改密码成功了。 
+到这里，新用户的创建工作就算完成了。下面，我们再补充一些有关增加新用户的常识： 
+1、 useradd所做的初始化操作已经包括在/home目录下为floatboat帐号建立一个名为floatboat的主目录。如果你不想使用这个缺省的目录，而希望把他的主目录放在/home/goal里（还放在/home下，只是一种良好的习惯，没有其他什么特别的要求），可以使用useradd的参数-d，命令如下： 
+useradd -d /home/goal floatboat 
+2、useradd的初始化操作还包括为用户单独建立一个与用户名同名的组（floatboat组）。这叫用户私有组的机制，与默认组机制相对应。对用户分组一是方便管理，二是可以明确权限。复杂的我们将在以后的深入内容中探讨。我们如果想让此用户加入一个已有的组的话，可以使用-g参数。例如我们想让floatboat加入webusers组，那么可以使用以下命令： 
+useradd -g webusers floatboat 
+同样的，我们还可以使用-G参数使他同时加入多个组，例如webusers和ftpusers： 
+useradd -G ftpusers,webusers floatboat 
+3、 passwd命令为一个用户设置密码，但它实质上是一个修改密码的程序。只有超级用户和用户自己可以修改密码，其它的普通用户没有给他修改密码的权利。用户密码的组成要尽量的复杂，最好包括字母、数字和特殊符号，而且最好设成6位以上。太短passwd程序不允许，只是单纯的字母或单纯的数字， passwd也会有意见。你都会看见passwd出现的提示的，不要害怕，仔细看看到底它是怎么说的：） 
+4、你在增加一个新用户的时候，也可以设置用户登录的shell。缺省的，系统提供了/bin/bash。你如果非要指定的话，可以使用-s 参数就可以了。例如 
+useradd -d /www -s /usr/bin/passwd floatboat 
+注意，这些参数是可以一块使用的，如上例所示，它表示增加新用户，并把其主目录路径设置在/www，登录的shell为/usr/bin/passwd。关于shell的更详细的说明，请参考下面的修改用户的个人设置相关内容。 
+5、删除一个用户可以使用userdel命令，直接带用户名做参数就可以了。 
+
+
+修改用户的设置 
+
+对现有用户的修改，比较常用的主要是修改密码（使用passwd就好了），修改用户的登录shell，修改用户所属的默认组，设置帐号有效期，修改用户的说明信息等等，偶尔也会用到修改用户主目录。 
+
+修改用户的登录shell 
+使用chsh命令可以修改自己的shell，只有超级用户才能用chsh username为其它用户修改shell设置。注意，指定的shell必须是列入/etc/shells文件中的shell，否则该用户将不能登陆。 
+一般，比较常见的shells文件包括下面这些shell： 
+/bin/bash2 
+/bin/bash 
+/bin/sh 
+/bin/ash 
+/bin/bsh 
+/bin/tcsh 
+/bin/csh 
+而网管们还喜欢在里面加上/usr/bin/passwd，这是为了不然用户通过控制台或telnet登录系统，却可以使用修改帐户密码（比如在FTP里用）。以及/bin/false，也就是不让这个用户登录的意思喽^&^，连FTP也不能用。 
+你也可以使用usermod命令修改shell信息，如下所示： 
+usermod -s /bin/bash floatboat 
+其中/bin/bash和floatboat应取相应的shell路径文件名及用户名。 
+还有一种情况，就是你为用户设置了一个空的shell（就是""），也就是说，这个用户没有shell。呵呵，绝对没有在我还未曾见过，因为这种用户登录后，系统还是会给它一个shell用的。不信你试试： 
+usermod -s "" floatboat 
+这种用户根据系统的不同，会有一个sh或bash进行操作，我也没有看出功能上和其它普通用户登录有什么不同。 
+
+
+修改用户所属的默认组 
+这个功能也可以通过usermod命令来实现，使用-g参数，例如把floatboat的默认组改为nobody，可以使用如下命令： 
+username -g nobody floatboat 
+nobody在类UNIX系统中一般都意味着没有任何权限。 
+
+设置帐号有效期 
+如果使用了影子口令，则可以使用如下命令来修改一个帐号的有效期： 
+usermod -e MM/DD/YY username 
+例如把用户floatboat的有效期定为2001年12月31日： 
+usermod -e 12/31/01 floatboat 
+如果把该用户的有效期设为已经过去的时间，就可以暂时禁止该用户登录系统。 
+
+修改用户的说明信息 
+修改用户的说明信息，最简单的方法莫过于直接修改/etc/passwd文件，找到对应的用户记录行，例如下列行： 
+floatboat:x:503:503::/home/floatboat:/bin/bash 
+你可以直接在第四个冒号和第五个冒号之间插入该用户的说明就可以了。其实，很多用户设置都可以在这修改，比如该行最后一部分/bin/bash就是用户登录shell的设置。关于这个/etc/passwd文件，我们后面将进一步的深入探讨。 
+
+
+修改用户主目录 
+修改用户的主目录主要使用usermod命令的-d参数，例如： 
+usermod -d /www floatboat 
+这一行将floatboat的主目录改到/www。如果想将现有主目录的主要内容转移到新的目录，应该使用-m开关，如下所示： 
+usermod -d -m /www floatboat
