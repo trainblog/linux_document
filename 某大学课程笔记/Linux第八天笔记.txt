@@ -1,0 +1,198 @@
+12、软件包管理
+	--	文件压缩与打包
+		-	tar命令，选项与参数：
+			-c：建立打包文件。
+			-t：查看打包文件的内容含有哪些文件
+			-x：解打包或者解压缩的功能，可以搭配-C（大写）在特定到特定目录解开
+			-j：通过bzip2的支持进行压缩/解压缩：此时文件最好是*.tar.bz2
+			-z：通过gzip的支持****************：************是*.tar.gz
+			-v：在压缩/解压缩的过程，将正在处理的文件名显示出来。
+			-f fliename： -f 后面跟处理后文件的全名称（路径+文件名+后缀名）
+			-C 目录： 这个选项用在压缩/解压缩，如果要在特定目录解压缩，可以使用这个选项。
+			-p：保留备份数据的原本权限与属性，这个一般用于备份（-c）重要的配置文件。
+			
+			注意：-c，-t，-x 不能同时出现在一组指令中。
+		 -	tar的常用组合指令
+			打包与压缩：
+			tar -zcvf [/路径] filename.tar.gz /被压缩文件或目录
+			例如：（下列命令在当前目录。所以文件前面没有写路径）
+				压缩：tar -zcvf haha.txt.tar.gz haha.txt
+				解压：tar -zvxf haha.txt.tar.gz
+			将/etc目录压缩到/home/目录下打包成etc01.tar.gz文件
+			tar -zcvf /home/etc01.tar.gz /etc/   （如果原本就在home目录中，可不写路径直接写文件名。）
+			将/home/etc01.tar.gz文件解压到/home/software/目录下
+			tar -zxvf etc01.tar.gz -C /home/software
+			将压缩包中的文件单独解压到指定目录中：
+				注：此处需要先指定目录。
+			tar -zxvC /home/software/ -f etc.tar.gz etc/shells
+			将压缩包中的文件单独解压到当前目录中：
+			tar -zxvf etc.tar.gz etc/shells
+			
+13、rpm安装软件
+	--	rpm：Redhat Package Manager 安装管理。
+		因为这个机制最早由RedHat开发出来，后来因为实在是太好用了，所以很多Linux中都使用。
+		-	优点：
+			1、RPM内含已经编译过的程序与配置文件等数据，可以让用户免除重新编译的困扰。
+			2、RPM在被安装之前，会先检查系统的硬盘容量、操作系统版本等，可避免文件被错误安装。
+			3、RPM文件本身提供软件版本信息、相依属性软件名称、软件涌入说明、软件所含文件等信息，便于用户对软件的了解。
+			4、RPM管理的方式使用数据库记录RPM文件的相关参数，便于升级、移除、查询与验证。
+			
+		-	rpm默认安装的路径：
+			/etc 
+			/usr/bin
+			/usr/lib		一些程序使用的动态链接库
+			/usr/share/doc 一些基本的软件使用手册和说明文件。
+			/usr/share/man 一些man page（Linux命令的随机帮助说明）文件。
+			
+		-	rpm安装：
+			rpm -ivh package_name
+			选项参数：
+				-i：install
+				-v：查看更细的安装信息。
+				-h：以安装信息列出显示安装进度。
+			- 安装单个rpm包：
+			rpm -ivh package_name
+			- 安装多个rpm包：
+			rpm -ivh 1.rpm 2.rpm 3.rpm
+			- 安装网上某个位置rpm包
+			rpm -ivh http://www.baidu.com/package/package.rpm
+				
+		-	安装java
+			rpm -ivh jdk-8u111-linux-x64.rpm  （如果rpm包不在当前目录的话需要使用绝对路径）
+			安装完成后，vim /etc/profile 在最后一行中添加环境变量：
+			
+			export JAVA_HOME=/usr/java/jdk1.8.0_111
+			export CLASSPATH=.:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar
+			export PATH=$JAVA_HOME/bin:$PATH
+			
+			退出后刷新下profile文件
+			source /etc/profile
+			输入java -version
+			提示以下信息证明安装成功并配置好了环境变量：
+				java version "1.8.0_111"
+				Java(TM) SE Runtime Environment (build 1.8.0_111-b14)
+				Java HotSpot(TM) 64-Bit Server VM (build 25.111-b14, mixed mode)
+		
+		-	rpm 查询已安装的软件：
+			选项参数：
+				-q：仅查询，后面接的软件名称是否有安装
+				-qa：列出所有的已经安装在本机Linux系统上的软件
+				-qi：列出该软件的纤细信息，包含开发商、版本和说明等。
+				-ql：列出该软件的所有文件与目录所在完整文件名。
+				-qc：列出该软件的所有配置文件。
+				-qd：列出该软件的所有说明文件
+				-qR：列出和该软件有关的相依软件所含的文件。
+				-qf：后面跟文件名，找出该文件属于哪一个已安装软件。
+			查询某个RPM包文件内含有的信息：
+				-qp[icdir]       注意：-qp后面接的所有参数以上面的说明一致，但是用途仅在于找出某个RPM包文件内的信息，并不是已经安装的软件信息。
+		-	rpm 软件卸载：
+			rpm -e package_name
+			例如：
+				rpm -e jdk1.8.0_111-1.8.0_111-fcs.x86_64
+			
+14、yum 安装软件：
+		-	为什么存在yum？
+			因为rpm头疼的依赖关系。
+				当安装一个rpm包时，发现它依赖于其他的rpm包，只能先去下载及安装这个依赖包。
+			所以，yum存在的理由就是可以帮助开发人员一次性解决环境问题。
+			yum是通过分析RPM的表头资料后，根据各软件的相关性制作出属性相依时的解决方案。
+			/etc/yum.repso.d
+		-	yum查询参数：
+			list：列出目前yum所管理的所有软件名称与版本，有点类似rpm -qa
+			info：同上，格式不太一样，不过有点类似于rpm -qai的执行结果。
+		-	查找jdk相关软件包：
+			yum search jdk
+		-	查看beakerlib软件：
+			yum info beakerlib
+		-	列出服务器上所有可以升级的软件
+			yum list updates
+		
+		-	yum安装/升级/卸载软件
+			yum [install / update /remove] 软件名
+			install： 要安装的软件名称
+			update：	要升级的软件名称
+			emove：	要删除的某个软件时，依赖于该软件并已经安装到系统中的其他软件或者包，也会被一并删除。（rpm方式删除某个包时，如果依赖于该包的其他包之前也被安装到系统中，删除不会成功，需要先手动删除那些包。）
+		
+				yum install -y 软件名   注：-y    相当于windows 全是。
+				yum remove 软件名
+				yum update 软件名 
+			
+		-	yum repo配置文件信：
+			在/etc/yum.repso.d/下
+			
+			noarch：对系统没有要求
+			x86：32位
+			x86_64：64位
+15、Shell基础：
+	--	概念：
+		-	什么是shell：
+			简单的说：shell是用户和Linux操作系统之间的接口，提供与操作系统之间的通讯方式。
+		-	shell基本上是一个命令解释器，它接收用户的命令（如ls），然后调用相关的应用程序。
+	--	系统提供哪些种类的shell
+		/bin/sh
+		/bin/bash
+		/sbin/nologin
+		/bin/dash
+		/bin/tcsh
+		/bin/csh
+		
+		主要跟/bin/bash打交道，它兼容/bin/sh，它是依据使用者的需求加强的sh版本。
+	--	shell中的变量：
+		变量的概念源于数学，在计算机中能存储计算结果，或表示值。
+		例如：x = y+5  其中x就是个变量。
+		
+			
+			
+		-	数据重定向：
+			标准输入：编号为0
+			标准输出：编号为1
+			标准错误输出：编号为2
+			
+			1>:以覆盖的方式，将正确的数据输出到文件
+			1>>：以追加的方式，将正确的数据输出到文件
+			2>：以覆盖的方式，将错误输出的数据输出到文件
+			2>>：以追加的方式，将错误输出的数据输出到文件。
+			
+			
+		-	命令执行判断	
+			$?:命令回传值
+				有两种：
+					&&：
+						cmd1 && cmd2 若cmd1运行完毕切正确运行($？=0)，则开始运行cmd2
+									 ************************($? !=0)，则cmd2不运行					 
+					||：
+						cmd1 || cmd2 若cmd1运行完毕且正确运行($？=0) ，则cmd2不运行
+									 ************************($? !=0)，则开始运行cmd2
+		
+				三目
+				
+			
+			
+		a=192.168.1.2
+		b='192.168.1.2'
+		c="192.168.1.2"
+		
+		echo "a=$a"
+		echo "b=$b"
+		echo "c=${c}"
+			
+			
+		int a = 5
+		a = a + 5
+		System.out.println
+		
+		a = 5
+		
+		
+		Linux中全局变量使用的全部大写，与java不同的是，在java中全部大小的变量叫常量。
+		
+		
+		
+			
+			
+			
+			
+			
+			
+			
+		

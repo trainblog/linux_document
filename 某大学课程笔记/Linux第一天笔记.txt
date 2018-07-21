@@ -1,0 +1,83 @@
+1、Linux概述
+	1.1 为什么学习Linux
+		-- 将来面试 
+		-- 用于后台的服务器
+		-- 大数据平台
+		-- Windows -- 24h不关机。
+		7X24
+	1.2	简介
+		Linux内核由芬兰人——李纳斯·托瓦斯（Linus Torvals）在上大学时候，由于个人的兴趣爱好写的。
+		Linux这是一个类Unix的开源操作系统。
+		
+	1.3	特点：
+		--	开源
+		--	多用户
+		--	多任务
+		--	良好的操作界面
+		--	支持多平台：可以在多种硬件环境平台上运行。
+		
+	1.4	互联网行业中常见的Linux操作系统
+		-- Linux的发行版简单来说就是，将Linux的内核与应用打包发布。
+		--	RedHat Linux：红帽子Linux（企业级）：收费。
+		--	CentOS Linux：山寨版的RedHat，免费。紧随RedHat发行版的更新。
+		--	Ubuntu Linux：汉译“乌班图”，被称为“最美Linux”，原因就是桌面的效果。但是企业中很少使用。--个人研究下。
+		-- KylinOS Linux：麒麟OS Linux，中国自主知识产权操作系统。中国自己开发。这个系统厉害到全中国的民营企业市场中占有率——“0”
+		-- 其他Linux：
+			Debian、SuSE、OpenSUSE等等~~~~
+		--	应用领域：
+			从嵌入式设备到超级计算机，在服务器方面应用的是最多。
+			
+
+	1.5 Linux VS Windows：
+		-- 在Windows下开发，在Linux下部署
+		-- Windows 
+			- 发行版几乎相似，快捷键也类似。
+			- 使用起来简单。
+			- 学习起来很困难，系统构造复杂，变化频繁，更新快，淘汰快。
+			- Windows下，软件大多数收费，并且学习起来困难，功能相似的软件很多。
+		-- Linux
+			- 根据发行版的不同而不同。甚至可能出现，互不兼容。
+			- 其实对比Windows更简单。
+			- 系架构简单，稳定，并且知识、技能传承性好，深入学习起来相对简单。
+			- 大部分软件都可以自由获取，同样功能的软件选择比较少。
+			
+2、系统的安装与分区。
+	2.1	需要用到的软件 
+		- PC安装虚拟机VMware 
+		- CentOS-6.5x64的操作系统
+		- SSH：Xshell
+		
+	2.2 系统安装完成后，网卡默认是不启动的，需要使用命令将网卡启动——if eth0
+		或者使用"service network restart"命令启动网卡。
+		使用setup来设置静态的IP地址。
+		
+		vim /etc/sysconfig/network-scripts/ifcfg-eth0 修改网卡开机启动状态
+		修改ONBOOT=NO为ONBOOT=YES
+		按一下ESC退出编辑状态
+		Shift+“；” 输入“wq”——保存退出。
+		输入命令重启网卡：service network restart
+		
+	2.3	时间查看，同步命令
+		date命令查看系统时间（相当于Windows系统的右下角时间）
+		clock（hwclock）命令查看硬件时间。（BIOS系统时间）。
+		一般情况下clock时间是不会错的，date时间有可能不对。
+		hwclock --hctosys或者clock --hctosys： hc代表硬件时间，sys代表系统时间。即表示硬件时间同步系统时间。
+		hwclock --systohc或者colck --systohc ：表示系统时间同步硬件时间。
+		
+		ntp命令：
+		ntpdate cn.pool.ntp.org
+		
+		
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+			
+	
